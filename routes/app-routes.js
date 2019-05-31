@@ -107,4 +107,58 @@ router.get('/api/notes', (req, res, next) => {
     })
 });
 
+router.get('/api/note/:note_id', (req, res, next) => {
+    let note_id = req.params.note_id;
+    let params = {
+        TableName: tableName,
+        IndexName: "note_id-index",
+        KeyConditionExpression: "note_id = :note_id",
+        ExpressionAttributeValues: {
+            ":note_id": note_id
+        },
+        Limit: 1
+    };
+
+    docClient.query(params, (err, data) => {
+        if (err) {
+            console.log(err);
+            return res.status(err.statusCode).send({
+                message: err.message,
+                status: err.statusCode
+            })
+        } else {
+            if (!_.isEmpty(data.Items)) //underscore "object function" (isEmpty())
+            //checks if data.Items is empty or not
+            {
+                return res.status(200).send(data.Items[0]); //return 1st item of array
+            } else {
+                return res.status(404).send();
+            }
+        }
+    });
+});
+
+router.delete('/api/note/:timestamp', (req, res, next)=>{
+    let timestamp = parseInt(req.params.timestamp);
+    let params = {
+        TableName: tableName,
+        Key: {
+            user_id: user_id,
+            timestamp: timestamp
+        }
+    };
+
+    docClient.delete(params, (err, data)=>{
+        if(err) {
+            console.log(err);
+            return res.status(err.statusCode).send({
+                message: err.message,
+                status: err.statusCode
+            });
+        } else {
+            return res.status(200).send();
+        }
+    })
+})
+
 module.exports = router;

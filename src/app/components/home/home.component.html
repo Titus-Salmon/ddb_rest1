@@ -1,0 +1,17 @@
+<div class="container-fluid bg-white">
+    <app-navbar
+        (showNoteModalEvent)="onShowNoteModal($event)"
+    ></app-navbar>
+</div>
+<div class="container-fluid">
+    <notes
+        (showNoteModalEvent)="onShowNoteModal($event)"
+    >
+    </notes>
+    <note class="page-modal" 
+        *ngIf="showNoteModal" 
+        [note]="selectedNote"
+        (refreshNotesEvent)="refreshNotes()"
+        (closeModalEvent)="onCloseNoteModal()"
+    ></note>
+</div>
